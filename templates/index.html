@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-2xl p-8 m-4 w-full max-w-3xl">
+        <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">Sentiment Analysis 🧠💬</h1>
+        <form method="POST" class="mb-8">
+            <textarea name="text" placeholder="Enter text for sentiment analysis" required
+                      class="w-full p-4 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      rows="4">{{ text }}</textarea>
+            <button type="submit"
+                    class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Analyze 🔍
+            </button>
+        </form>
+        
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+        {% endif %}
+        
+        {% if sentiment %}
+        <div class="bg-gray-100 rounded-lg p-6 shadow-inner">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Analysis Result:</h2>
+            <p class="mb-2"><span class="font-bold">Text:</span> {{ text }}</p>
+            <p class="mb-4">
+                <span class="font-bold">Sentiment:</span> 
+                <span class="text-2xl">{{ sentiment }} {{ emoji }}</span>
+            </p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <p class="font-bold mb-2">Positive 😊</p>
+                    <div class="w-full bg-gray-200 rounded-full">
+                        <div class="bg-green-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full" 
+                             style="width: {{ scores.confidence.positive }}%">
+                            {{ scores.confidence.positive }}%
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <p class="font-bold mb-2">Neutral 😐</p>
+                    <div class="w-full bg-gray-200 rounded-full">
+                        <div class="bg-yellow-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full" 
+                             style="width: {{ scores.confidence.neutral }}%">
+                            {{ scores.confidence.neutral }}%
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <p class="font-bold mb-2">Negative 😔</p>
+                    <div class="w-full bg-gray-200 rounded-full">
+                        <div class="bg-red-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full" 
+                             style="width: {{ scores.confidence.negative }}%">
+                            {{ scores.confidence.negative }}%
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow">
+                    <p class="font-bold mb-2">Compound Score 🧮</p>
+                    <p class="text-2xl font-bold {% if scores.compound >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                        {{ scores.compound }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <span class="text-6xl float-animation inline-block">{{ emoji }}</span>
+        </div>
+        {% endif %}
+    </div>
+    <script>
+        // Add a small animation when submitting the form
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.classList.add('opacity-50');
+            setTimeout(() => this.submit(), 300);
+        });
+    </script>
+</body>
+</html>
